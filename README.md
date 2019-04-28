@@ -1,4 +1,44 @@
-# Overview
+# コマンドメモ
+```
+# イメージファイルをダウンロードする
+curl http://download.tensorflow.org/example_images/flower_photos.tgz \
+| tar xz -C tf_files
+
+# 環境変数を設定
+export IMAGE_SIZE=224
+export ARCHITECTURE="mobilenet_0.50_${IMAGE_SIZE}"
+export ARCHITECTURE="inception_v3"
+
+
+```
+
+Tensorboardを起動する
+tensorboard --logdir tf_files/training_summaries &
+
+
+python3 -m scripts.retrain \
+  --bottleneck_dir=tf_files/bottlenecks \
+  --how_many_training_steps=500 \
+  --model_dir=tf_files/models/ \
+  --summaries_dir=tf_files/training_summaries/"${ARCHITECTURE}" \
+  --output_graph=tf_files/retrained_graph_inception.pb \
+  --output_labels=tf_files/retrained_labels.txt \
+  --architecture="${ARCHITECTURE}" \
+  --image_dir=tf_files/flower_photos
+
+
+# モデルを使って推測
+python3 -m scripts.label_image \
+    --graph=tf_files/retrained_graph.pb  \
+    --image=mypic/daisy4.jpg
+
+
+python3 -m scripts.label_image \
+    --graph=tf_files/retrained_graph_inception.pb  \
+    --image=mypic/daisy4.jpg
+
+
+#Overview
 
 This repo contains code for the "TensorFlow for poets 2" series of codelabs.
 
